@@ -1,0 +1,29 @@
+@charset "utf-8";
+
+$color-shadow: rgba(black, .125) !global;
+
+$color-primary: #00D1B4 !global;
+$color-accent: #00D1B4 !global;
+
+$color-background: #00D1B4 !global;
+$color-background-shade: #00D1B4 !global;
+$color-background-invert: #00D1B4 !global;
+
+$color-text: #00D1B4 !global;
+$color-text-weak: #00D1B4 !global;
+$color-text-strong: #00D1B4 !global;
+$color-text-heading: $color-primary !global;
+
+$color-text-invert: #00D1B4 !global;
+$color-text-strong-invert: #00D1B4 !global;
+
+$color-text-link: #00D1B4 !global;
+$color-text-link-visited: #00D1B4 !global;
+$color-text-link-hover: #00D1B4 !global;
+
+$color-border: #00D1B4 !global;
+
+/**
+ * padding
+ */
+$p-10: 10px;
