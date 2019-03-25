@@ -16,12 +16,10 @@ const questionSchema = new mongoose.Schema({
   },
   upvote: [{
     type: mongoose.Schema.Types.ObjectId,
-    unique: true,
     ref: (require('../user/index')).collection.name
   }],
   downvote: [{
     type: mongoose.Schema.Types.ObjectId,
-    unique: true,
     ref: (require('../user/index')).collection.name
   }],
   author: {

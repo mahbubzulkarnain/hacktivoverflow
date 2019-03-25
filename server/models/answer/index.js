@@ -12,14 +12,10 @@ const answerSchema = new mongoose.Schema({
   },
   upvote: [{
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    unique: true,
     ref: (require('../user/index')).collection.name
   }],
   downvote: [{
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    unique: true,
     ref: (require('../user/index')).collection.name
   }],
   created_at: {
