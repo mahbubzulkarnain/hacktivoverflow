@@ -64,8 +64,8 @@ export default {
   name: 'Login',
   data() {
     return {
-      email: 'prof.bub@live.com',
-      password: 'useradmin',
+      email: '',
+      password: '',
       error: '',
     };
   },

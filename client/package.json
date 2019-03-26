@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service lint --fix; vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "vue-cli-service s3-deploy"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.8.0",
@@ -16,6 +17,7 @@
     "highlight.js": "^9.15.6",
     "marked": "^0.6.1",
     "vue": "^2.6.6",
+    "vue-cli-plugin-s3-deploy": "^3.0.0",
     "vue-input-tag": "^2.0.5",
     "vue-router": "^3.0.1",
     "vue-simplemde": "^0.5.1",
