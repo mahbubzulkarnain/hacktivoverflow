@@ -88,3 +88,27 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+/**
+ * Socket IO
+ */
+
+var io = require('socket.io')(server);
+
+var room = 'global';
+
+io.on('connection', function (socket) {
+  socket.on('join', function (prop) {
+    if (prop && prop.room) {
+      room = prop.room;
+    }
+    socket.join(room);
+  });
+
+  socket.on('question-update', function (prop) {
+    console.log(io.sockets.manager.roomClients[socket.id]);
+    socket
+      .to(room)
+      .emit('question-update-by-id', {hash: prop.hash})
+  });
+});

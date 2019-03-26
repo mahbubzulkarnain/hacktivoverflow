@@ -13,18 +13,46 @@
         :key="item._id"
       />
     </div>
+    <div class="mt-30">
+      <markdown-editor :highlight="true" v-model="newContent"></markdown-editor>
+      <div class="is-pulled-right">
+        <button class="button is-primary" @click="postAnswer">Post</button>
+      </div>
+    </div>
   </WithSidebar>
 </template>
 
 <script>
 import Board from '@/components/Card.vue';
+import markdownEditor from 'vue-simplemde/src/markdown-editor.vue';
+
+import hljs from 'highlight.js';
+
+window.hljs = hljs;
 
 export default {
   name: 'Read',
   data() {
     return {
-      question: [],
+      question: {},
+      newContent: '',
     };
+  },
+  methods: {
+    postAnswer() {
+      console.log(this.newContent);
+      this.$api
+        .post(`/questions/${this.question.slug}/answers`, {
+          content: this.newContent,
+        })
+        .then(({ data }) => {
+          this.question.answer.push(data);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      this.newContent = '';
+    },
   },
   mounted() {
     this.$api
@@ -38,11 +66,16 @@ export default {
   },
   components: {
     Board,
+    markdownEditor,
   },
 };
 </script>
 
 <style scoped lang="scss">
+  @import '~simplemde/dist/simplemde.min.css';
+  @import '~simplemde/dist/simplemde.min.css';
+  @import '~highlight.js/styles/atom-one-dark.css';
+
   .mt-30 {
     margin-top: 30px;
   }
