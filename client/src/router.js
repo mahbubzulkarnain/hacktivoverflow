@@ -23,6 +23,11 @@ const router = new Router({
       redirect: '/login',
     },
     {
+      path: '/tags/:slug',
+      name: 'question-slug',
+      component: () => import(/* webpackChunkName: "question-tags" */ './views/Home.vue'),
+    },
+    {
       path: '/',
       name: 'home',
       component: Home,
@@ -89,11 +94,6 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "question-read" */ './views/question/Read.vue'),
         },
       ],
-    },
-    {
-      path: '/tags/:slug',
-      name: 'question-read',
-      component: () => import(/* webpackChunkName: "question-read" */ './views/Home.vue'),
     },
   ],
 });

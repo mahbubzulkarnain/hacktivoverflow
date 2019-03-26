@@ -25,6 +25,15 @@
         <div class="title" v-if="item.title">{{item.title}}</div>
         <hr v-if="item.title">
         <p v-html="content"></p>
+        <div class="is-pulled-right">
+          <p class="is-size-7">
+            {{
+            item.updated_at
+            ? 'modified ' + timeAgo(item.updated_at)
+            : 'asked ' + timeAgo(item.created_at)
+            }}
+            {{fullname}}</p>
+        </div>
         <div class="tags" v-if="item.tags && item.tags.length">
           <router-link class="tag" v-for="(tag,i) in item.tags" :key="i" :to="'/tags/'+tag">
             {{tag}}
@@ -38,6 +47,7 @@
 
 <script>
 import marked from 'marked';
+import timeAgoParsed from '../helpers/timeAgo';
 
 export default {
   name: 'Board',
@@ -47,6 +57,10 @@ export default {
     },
     prop: {
       default: {
+        author: {
+          first_name: '',
+          last_name: '',
+        },
         content: 'Not Found',
       },
     },
@@ -58,6 +72,13 @@ export default {
     };
   },
   computed: {
+    fullname() {
+      try {
+        return `${this.item.author.first_name || ''} ${this.item.author.last_name || ''}`;
+      } catch (e) {
+        return '';
+      }
+    },
     user() {
       return this.$store.getters.user;
     },
@@ -79,6 +100,9 @@ export default {
     },
   },
   methods: {
+    timeAgo(date) {
+      return timeAgoParsed(date);
+    },
     editContent() {
       if (this.prop.answer) {
         this.$router.push(`/question/${this.prop.slug}/edit`);

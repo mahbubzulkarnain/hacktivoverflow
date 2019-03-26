@@ -93,22 +93,45 @@ function onListening() {
  * Socket IO
  */
 
-var io = require('socket.io')(server);
+// var io = require('socket.io')(server);
 
-var room = 'global';
+// var room = 'global';
 
-io.on('connection', function (socket) {
-  socket.on('join', function (prop) {
-    if (prop && prop.room) {
-      room = prop.room;
-    }
-    socket.join(room);
-  });
+// io.on('connection', function (socket) {
+//   socket.on('join', function (prop) {
+//     if (prop && prop.room) {
+//       room = prop.room;
+//     }
+//     socket.join(room);
+//   });
+//
+//   socket.on('question-update', function (prop) {
+//     console.log(io.sockets.manager.roomClients[socket.id]);
+//     socket
+//       .to(room)
+//       .emit('question-update-by-id', {hash: prop.hash})
+//   });
+// });
 
-  socket.on('question-update', function (prop) {
-    console.log(io.sockets.manager.roomClients[socket.id]);
-    socket
-      .to(room)
-      .emit('question-update-by-id', {hash: prop.hash})
-  });
-});
+/**
+ * Cron JOB
+ */
+
+// var kue = require('kue'), queue = kue.createQueue();
+
+// var job = queue.create('email', {
+//   title: 'welcome email for tj'
+//   , to: 'tj@learnboost.com'
+//   , template: 'welcome-email'
+// }).save(function (err) {
+//   if (!err) console.log(job.id, 'ini create');
+// });
+
+// kue.app.listen(4000, function () {
+//   console.log('Kue Listen on Port: 4000')
+// });
+
+// queue.process('email', (job, done) => {
+//   console.log(job.data, 'ini email');
+//   done()
+// });

@@ -22,6 +22,15 @@
         >
           <h2 class="subtitle">{{question.title}}</h2>
         </router-link>
+        <div class="is-pulled-right">
+          <p class="is-size-7">
+            {{
+            question.updated_at
+            ? 'modified ' + timeAgo(question.updated_at)
+            : 'asked ' + timeAgo(question.created_at)
+            }}
+            {{question.author.first_name +' '+question.author.last_name}}</p>
+        </div>
         <div class="tags" v-if="question.tags && question.tags.length">
           <router-link class="tag" v-for="(tag,i) in question.tags" :key="i" :to="'/tags/'+tag">
             {{tag}}
@@ -35,33 +44,20 @@
 
 <script>
 
+import timeAgoParsed from '../helpers/timeAgo';
+
 export default {
   name: 'home',
   data() {
     return {
       questions: [],
+      router: '',
     };
   },
-  beforeUpdate() {
-    if (this.$router.currentRoute.params && this.$router.currentRoute.params.slug) {
-      this.$api
-        .get(`/tags/${this.$router.currentRoute.params.slug}`)
-        .then(({ data }) => {
-          this.questions = data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      this.$api
-        .get('/questions')
-        .then(({ data }) => {
-          this.questions = data;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+  methods: {
+    timeAgo(date) {
+      return timeAgoParsed(date);
+    },
   },
   mounted() {
     if (this.$router.currentRoute.params && this.$router.currentRoute.params.slug) {
