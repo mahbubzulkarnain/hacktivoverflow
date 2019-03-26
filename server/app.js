@@ -25,6 +25,7 @@ require('mongoose')
     console.error(err)
   });
 
+app.use(require('cors')());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));

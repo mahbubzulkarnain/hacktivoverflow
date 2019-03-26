@@ -2,34 +2,28 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import firebase from 'firebase/app';
-import 'firebase/auth'
-import 'firebase/firestore'
+import api from './helpers/api';
+
+import WithSidebar from './components/layout/WithSidebar.vue';
+import WithoutSidebar from './components/layout/WithoutSidebar.vue';
+
+Vue.component('WithSidebar', WithSidebar);
+Vue.component('WithoutSidebar', WithoutSidebar);
 
 Vue.config.productionTip = false;
+Vue.prototype.webname = 'HacktivOverflow';
 
-// Initialize Firebase
-var config = {
-  apiKey: "AIzaSyDudfijv8MZUyFT6zZO--XKYneI_UI84TM",
-  authDomain: "hacktivoverflow-e87c1.firebaseapp.com",
-  databaseURL: "https://hacktivoverflow-e87c1.firebaseio.com",
-  projectId: "hacktivoverflow-e87c1",
-  storageBucket: "hacktivoverflow-e87c1.appspot.com",
-  messagingSenderId: "1044867472962"
-};
+Vue.prototype.$api = api;
 
-firebase.initializeApp(config);
+if (localStorage.xs) {
+  Vue.prototype.$api.defaults.headers.common.Authorization = `Bearer ${localStorage.xs}`;
+}
 
-Vue.prototype.$auth = firebase.auth();
-Vue.prototype.$db = firebase.firestore();
+Vue.prototype.webname = 'HacktivOverflow';
+document.title = 'HacktivOverflow';
 
-let app = ``;
-firebase.auth().onAuthStateChanged(() => {
-  if (!app) {
-    app = new Vue({
-      router,
-      store,
-      render: h => h(App),
-    }).$mount('#app');
-  }
-});
+new Vue({
+  router,
+  store,
+  render: h => h(App),
+}).$mount('#app');

@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service lint --fix; vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.8.0",
+    "axios": "^0.18.0",
     "bulma": "^0.7.4",
+    "bulma-badge": "^3.0.0",
     "firebase": "^5.9.0",
+    "marked": "^0.6.1",
     "vue": "^2.6.6",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1"

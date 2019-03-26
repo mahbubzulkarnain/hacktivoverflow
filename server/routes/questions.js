@@ -2,6 +2,16 @@ const router = require('express').Router();
 const Question = require('../models/question/index');
 const Answer = require('../models/answer/index');
 const jwt = require('../middlewares/jwt');
+const {ObjectId} = require('mongoose').Types;
+
+function getQuestionBySlug(slug) {
+  return Question
+    .findOne({
+      slug: slug
+    })
+    .populate('answer')
+    .populate('author', '-password')
+}
 
 router
   .patch('/:slug/answers/:id/approve', jwt, function ({params}, res, next) {
@@ -18,9 +28,15 @@ router
             .status(204)
             .send();
         } else {
-          question.answerApproved = params.id;
+          try {
+            question.answerApproved = params.id;
+            question.updated_at = new Date();
+            await question.save()
+          } catch (e) {
+            console.log(e)
+          }
           res
-            .json(await question.save())
+            .json(await getQuestionBySlug(params.slug))
         }
       })
   });
@@ -28,7 +44,7 @@ router
 async function clearVoteAnswer(id, user) {
   try {
     await Answer
-      .updateOne({_id: id}, {"$pull": {"upvote": user}}, {
+      .update({_id: ObjectId(id)}, {"$pull": {"upvote": user}}, {
         safe: true,
         multi: true
       });
@@ -37,8 +53,8 @@ async function clearVoteAnswer(id, user) {
   }
 
   try {
-    await Question
-      .updateOne({slug: slug}, {"$pull": {"downvote": user}}, {
+    await Answer
+      .update({_id: ObjectId(id)}, {"$pull": {"downvote": user}}, {
         safe: true,
         multi: true
       });
@@ -48,8 +64,8 @@ async function clearVoteAnswer(id, user) {
 }
 
 router
-  .patch('/:slug/answers/:id/down', jwt, function ({params, body}, res, next) {
-    clearVoteAnswer(params.id, res.locals.user.id);
+  .patch('/:slug/answers/:id/down', jwt, async function ({params, body}, res, next) {
+    await clearVoteAnswer(params.id, res.locals.user.id);
     Answer
       .findById(params.id)
       .then(async (answer) => {
@@ -58,9 +74,15 @@ router
             .status(204)
             .send();
         } else {
-          answer.downvote.push(res.locals.user.id);
+          let newAnswer = answer;
+          try {
+            answer.downvote.push(res.locals.user.id);
+            newAnswer = await answer.save();
+          } catch (e) {
+            console.log(e)
+          }
           res
-            .json(await answer.save())
+            .json(newAnswer)
         }
       })
       .catch((err) => {
@@ -72,8 +94,8 @@ router
           })
       })
   })
-  .patch('/:slug/answers/:id/up', jwt, function ({params, body}, res, next) {
-    clearVoteAnswer(params.id, res.locals.user.id);
+  .patch('/:slug/answers/:id/up', jwt, async function ({params, body}, res, next) {
+    await clearVoteAnswer(params.id, res.locals.user.id);
     Answer
       .findById(params.id)
       .then(async (answer) => {
@@ -82,9 +104,14 @@ router
             .status(204)
             .send();
         } else {
-          answer.upvote.push(res.locals.user.id);
-          res
-            .json(await answer.save())
+          let newAnswer = answer;
+          try {
+            answer.upvote.push(res.locals.user.id);
+            newAnswer = await answer.save();
+          } catch (e) {
+            console.log(e)
+          }
+          res.json(newAnswer)
         }
       })
       .catch((err) => {
@@ -105,11 +132,16 @@ router
             .status(204)
             .send();
         } else {
-          delete body['author'];
-          answer.updated_at = new Date();
-          Object.assign(answer, body);
+          try {
+            delete body['author'];
+            answer.updated_at = new Date();
+            Object.assign(answer, body);
+            await answer.save()
+          } catch (e) {
+            console.log(e)
+          }
           res
-            .json(await answer.save())
+            .json(await getQuestionBySlug(params.slug))
         }
       })
       .catch((err) => {
@@ -122,12 +154,7 @@ router
       })
   })
   .get('/:slug/answers', function ({params}, res, next) {
-    Question
-      .findOne({
-        slug: params.slug
-      })
-      .populate('answer')
-      .populate('author', '-password')
+    getQuestionBySlug(params.slug)
       .then((props) => {
         res
           .json(props)
@@ -153,10 +180,7 @@ router
               message: 'Internal Server Error'
             })
         } else {
-          Question
-            .findOne({
-              slug: params.slug
-            })
+          getQuestionBySlug(params.slug)
             .then(async (question) => {
               try {
                 question.answer.push(saveAnswer._id);
@@ -182,7 +206,7 @@ router
 async function clearVoteQuestion(slug, user) {
   try {
     await Question
-      .updateOne({slug: slug}, {"$pull": {"upvote": user}}, {
+      .update({slug: slug}, {"$pull": {"upvote": user}}, {
         safe: true,
         multi: true
       });
@@ -192,7 +216,7 @@ async function clearVoteQuestion(slug, user) {
 
   try {
     await Question
-      .updateOne({slug: slug}, {"$pull": {"downvote": user}}, {
+      .update({slug: slug}, {"$pull": {"downvote": user}}, {
         safe: true,
         multi: true
       });
@@ -204,10 +228,7 @@ async function clearVoteQuestion(slug, user) {
 router
   .patch('/:slug/up', jwt, async function ({params}, res, next) {
     await clearVoteQuestion(params.slug, res.locals.user.id);
-    Question
-      .findOne({
-        slug: params.slug
-      })
+    getQuestionBySlug(params.slug)
       .then(async (question) => {
         if (!question) {
           res
@@ -228,10 +249,7 @@ router
   })
   .patch('/:slug/down', jwt, async function ({params}, res, next) {
     await clearVoteQuestion(params.slug, res.locals.user.id);
-    Question
-      .findOne({
-        slug: params.slug
-      })
+    getQuestionBySlug(params.slug)
       .then(async (question) => {
         if (!question) {
           res
@@ -253,12 +271,7 @@ router
 
 router
   .get('/:slug', function ({params}, res, next) {
-    Question
-      .findOne({
-        slug: params.slug
-      })
-      .populate('answer')
-      .populate('author', '-password')
+    getQuestionBySlug(params.slug)
       .then((props) => {
         res
           .json(props)
