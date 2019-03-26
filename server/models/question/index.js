@@ -36,8 +36,7 @@ const questionSchema = new mongoose.Schema({
     ref: (require('../answer/index')).collection.name
   }],
   tags: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: (require('../tag/index')).collection.name
+    type: String,
   }],
   created_at: {
     type: Date,

@@ -25,35 +25,11 @@
             </div>
           </form>
         </div>
-        <div class="navbar-item has-dropdown is-hoverable" v-if="isLogin && false">
-          <a class="navbar-link is-arrowless">
-            <i class="fa fa-shopping-cart"></i>
-          </a>
-          <div class="navbar-dropdown is-right">
-            <div class="carts">
-              <div class="carts-body">
-                <div class="cart-item" v-for="(cart, i) in carts" :key="i">
-                  <div class="cart-item-image">
-                    <!--<img src="../assets/images/header.jpg">-->
-                  </div>
-                  <div class="cart-item-title">
-                    {{cart.title}}
-                  </div>
-                  <div class="cart-item-detail">
-                    <div class="price">
-                      {{cart.price}}
-                    </div>
-                    <div class="quantity">
-                      {{cart.quantity}} item
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="carts-footer">
-                <div class="quantity">9 Jumlah</div>
-                <router-link to="/carts">View Cart</router-link>
-              </div>
-            </div>
+        <div class="navbar-item" v-if="isLogin">
+          <div class="buttons">
+            <router-link to="/question/create" class="button is-primary">
+              <strong>Ask Question</strong>
+            </router-link>
           </div>
         </div>
         <div class="navbar-item has-dropdown is-hoverable" v-if="isLogin">

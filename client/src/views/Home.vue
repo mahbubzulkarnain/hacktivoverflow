@@ -1,26 +1,31 @@
 <template>
-  <WithSidebar>
-    <router-link v-for="question in questions" :key="question._id" class="columns" :to="'/question/'+question.slug">
-      <div class="column is-one-fifth has-text-centered">
-        <div class="columns">
-          <div class="column">
-            <p>{{question.upvote.length + question.downvote.length}}</p>
-            <p>Vote</p>
-          </div>
-          <div class="column">
-            <p>{{question.answer.length}}</p>
-            <p>Answer</p>
+  <with-sidebar class="home">
+    <div v-for="question in questions" :key="question._id">
+      <router-link
+        :to="'/question/'+question.slug"
+        class="columns link-question"
+      >
+        <div class="column is-one-fifth has-text-centered">
+          <div class="columns">
+            <div class="column">
+              <p>{{question.upvote.length + question.downvote.length}}</p>
+              <p>Vote</p>
+            </div>
+            <div class="column">
+              <p>{{question.answer.length}}</p>
+              <p>Answer</p>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="column is-four-fifth">{{question.title}}</div>
-    </router-link>
-  </WithSidebar>
+        <div class="column is-four-fifth">
+          <h2 class="subtitle">{{question.title}}</h2>
+        </div>
+      </router-link>
+    </div>
+  </with-sidebar>
 </template>
 
 <script>
-// @ is an alias to /src
-import Board from '@/components/Card.vue';
 
 export default {
   name: 'home',
@@ -39,14 +44,11 @@ export default {
         console.log(err);
       });
   },
-  components: {
-    Board,
-  },
 };
 </script>
 
 <style scoped lang="scss">
-  .home {
-    margin-top: 20px;
+  .link-question * {
+    color: #000;
   }
 </style>

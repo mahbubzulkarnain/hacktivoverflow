@@ -1,16 +1,24 @@
 const router = require('express').Router();
 const Question = require('../models/question/index');
 const Answer = require('../models/answer/index');
+const Tag = require('../models/tag/index');
 const jwt = require('../middlewares/jwt');
 const {ObjectId} = require('mongoose').Types;
+const slugify = require('slugify');
 
 function getQuestionBySlug(slug) {
   return Question
     .findOne({
       slug: slug
     })
-    .populate('answer')
-    .populate('author', '-password')
+    .populate({
+      path: 'answer',
+      populate: {
+        path: 'author',
+        select: '_id first_name last_name picture email username __v'
+      }
+    })
+    .populate('author', '-password -googleToken')
 }
 
 router
@@ -116,6 +124,39 @@ router
       })
       .catch((err) => {
         console.log(err);
+        res
+          .status(500)
+          .json({
+            message: 'Internal Server Error'
+          })
+      })
+  })
+  .delete('/:slug/answers/:id', jwt, function ({params}, res, next) {
+    Answer
+      .findById(params.id)
+      .then(async (answer) => {
+        if (!answer) {
+          res
+            .status(204)
+            .send()
+        } else {
+          let deletedAnswer = answer;
+          try {
+            deletedAnswer = await answer.remove();
+            await Question
+              .update({slug: params.slug}, {"$pull": {"answer": answer._id}}, {
+                safe: true,
+                multi: true
+              });
+          } catch (e) {
+            console.log(e)
+          }
+          res
+            .json(deletedAnswer)
+        }
+      })
+      .catch((err) => {
+        console.error(err);
         res
           .status(500)
           .json({
@@ -283,11 +324,14 @@ router
           .json(`Internal Server Error`)
       })
   })
-  .patch('/:id', jwt, function ({params, body}, res) {
-    delete body['id'];
+  .patch('/:slug', jwt, function ({params, body}, res) {
+    delete body['_id'];
+    delete body['slug'];
     delete body['author'];
     Question
-      .findById(params.id)
+      .findOne({
+        slug: params.slug
+      })
       .then(async (question) => {
         if (!question) {
           res
@@ -307,9 +351,11 @@ router
           .json(`Internal Server Error`)
       })
   })
-  .delete('/:id', jwt, function ({params}, res, next) {
+  .delete('/:slug', jwt, function ({params}, res, next) {
     Question
-      .findById(params.id)
+      .findOne({
+        slug: params.slug
+      })
       .then(async (question) => {
         if (!question) {
           res
@@ -347,6 +393,13 @@ router
   })
   .post('/', jwt, function ({body}, res) {
     body['author'] = res.locals.user.id;
+    let newTag = [];
+    if (body.tags && body.tags.length) {
+      body.tags.forEach((tag) => {
+        newTag.push(slugify(tag).toLowerCase())
+      })
+    }
+    body.tags = newTag;
     (new Question(body))
       .save((err, data) => {
         if (err) {

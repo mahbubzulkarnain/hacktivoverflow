@@ -26,9 +26,6 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home,
-      meta: {
-        requiresAuth: true,
-      },
     },
     {
       path: '/about',
@@ -58,9 +55,26 @@ const router = new Router({
       },
     },
     {
-      path: '/question/:slug',
-      name: 'question-read',
-      component: () => import(/* webpackChunkName: "about" */ './views/question/Read.vue'),
+      path: '/question/create',
+      name: 'question-create',
+      component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
+    },
+    {
+      path: '/question/:slug/edit',
+      name: 'question-edit',
+      component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
+    },
+    {
+      path: '/question/',
+      name: 'question',
+      component: () => import(/* webpackChunkName: "question-read" */ './views/question/Index.vue'),
+      children: [
+        {
+          path: ':slug',
+          name: 'question-read',
+          component: () => import(/* webpackChunkName: "question-read" */ './views/question/Read.vue'),
+        },
+      ],
     },
   ],
 });

@@ -97,6 +97,10 @@ export default {
     @extend .is-active;
   }
 
+  .mt-30 {
+    margin-top: 30px;
+  }
+
   @import "~bulma/bulma.sass";
   @import "~bulma-badge/src/sass/index";
 

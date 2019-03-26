@@ -1,11 +1,11 @@
 <template>
-  <WithSidebar>
+  <div>
     <Board
       :prop="question"
       :endpoint="`/questions/${question.slug}`"
     />
-    <div class="mt-30" v-if="question && question.answer && question.answer.length">
-      <div class="subtitle">{{question.answer.length}} Answer</div>
+    <div class="mt-30 subtitle">{{question.answer && question.answer.length || 0}} Answer</div>
+    <div v-if="question && question.answer && question.answer.length">
       <Board
         v-for="item in question.answer"
         :prop="item"
@@ -13,13 +13,14 @@
         :key="item._id"
       />
     </div>
-    <div class="mt-30">
+    <div class="mt-30" v-if="isLogin">
       <markdown-editor :highlight="true" v-model="newContent"></markdown-editor>
+      <div class="mt-30"/>
       <div class="is-pulled-right">
         <button class="button is-primary" @click="postAnswer">Post</button>
       </div>
     </div>
-  </WithSidebar>
+  </div>
 </template>
 
 <script>
@@ -38,9 +39,16 @@ export default {
       newContent: '',
     };
   },
+  computed: {
+    isLogin() {
+      return this.$store.getters.isLogin;
+    },
+    user() {
+      return this.$store.getters.user;
+    },
+  },
   methods: {
     postAnswer() {
-      console.log(this.newContent);
       this.$api
         .post(`/questions/${this.question.slug}/answers`, {
           content: this.newContent,
@@ -58,7 +66,11 @@ export default {
     this.$api
       .get(`/questions/${this.$router.currentRoute.params.slug}`)
       .then(({ data }) => {
-        this.question = data;
+        if (!data) {
+          this.$router.replace('/');
+        } else {
+          this.question = data;
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -72,11 +84,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  @import "../../assets/stylesheet/config";
   @import '~simplemde/dist/simplemde.min.css';
   @import '~simplemde/dist/simplemde.min.css';
   @import '~highlight.js/styles/atom-one-dark.css';
-
-  .mt-30 {
-    margin-top: 30px;
-  }
 </style>
