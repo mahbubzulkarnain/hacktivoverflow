@@ -72,6 +72,13 @@ async function clearVoteAnswer(id, user) {
   }
 }
 
+/**
+ * answer: { downvotes: [], upvotes: [dimitri] }
+ *
+ * 1. Manipulasi array di JavaScript
+ * 2. Answer.update({ downvotes, upvotes });
+ */
+
 router
   .patch('/:slug/answers/:id/down', jwt, async function ({params, body}, res, next) {
     await clearVoteAnswer(params.id, res.locals.user.id);

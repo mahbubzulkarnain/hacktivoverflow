@@ -58,16 +58,25 @@ const router = new Router({
       path: '/question/create',
       name: 'question-create',
       component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: '/question/:slug/edit',
       name: 'question-edit',
       component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: '/question/:slug/answer/:id/edit',
       name: 'answer-edit',
       component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: '/question/',
