@@ -19,6 +19,9 @@
         </div>
         <div class="column is-four-fifth">
           <h2 class="subtitle">{{question.title}}</h2>
+          <div class="tags" v-if="question.tags && question.tags.length">
+            <div class="tag" v-for="(tag,i) in question.tags" :key="i">{{tag}}</div>
+          </div>
         </div>
       </router-link>
     </div>

@@ -1,6 +1,6 @@
 <template>
   <with-sidebar>
-    <div class="field">
+    <div class="field" v-if="!hideTitle">
       <label>Title</label>
       <div class="control">
         <input type="text" v-model="newTitle" class="input" placeholder="Title">
@@ -8,8 +8,10 @@
     </div>
     <label>Question</label>
     <markdown-editor :highlight="true" v-model="newContent"></markdown-editor>
-    <label>Tags</label>
-    <input-tag v-model="newTags" placeholder="Tags..."></input-tag>
+    <div v-if="!hideTags">
+      <label>Tags</label>
+      <input-tag v-model="newTags" placeholder="Tags..."></input-tag>
+    </div>
     <div class="mt-30"/>
     <div class="is-pulled-right">
       <button class="button is-primary" @click="postQuestion">Post</button>
@@ -27,33 +29,57 @@ export default {
   name: 'Create',
   data() {
     return {
+      hideTitle: false,
+      hideTags: false,
       slug: '',
+      id: '',
       newTitle: '',
       newContent: '',
       newTags: [],
     };
   },
   mounted() {
-    if (this.$router.currentRoute
-        && this.$router.currentRoute.params
-        && this.$router.currentRoute.params.slug
-    ) {
-      this.slug = this.$router.currentRoute.params.slug;
-      this.$api
-        .get(`/questions/${this.slug}`)
-        .then(({ data }) => {
-          this.newTitle = data.title;
-          this.newContent = data.content;
-          this.newTags = data.tags;
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+    console.log(!!this.$router.currentRoute.params.id);
+    if (this.$router.currentRoute && this.$router.currentRoute.params) {
+      if (this.$router.currentRoute.params.id && this.$router.currentRoute.params.slug) {
+        this.id = this.$router.currentRoute.params.id;
+        this.slug = this.$router.currentRoute.params.slug;
+        this.hideTitle = true;
+        this.hideTags = true;
+        this.$api
+          .get(`/questions/${this.slug}/answers/${this.id}`)
+          .then(({ data }) => {
+            this.newContent = data.content;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else if (this.$router.currentRoute.params.slug) {
+        this.slug = this.$router.currentRoute.params.slug;
+        this.$api
+          .get(`/questions/${this.slug}`)
+          .then(({ data }) => {
+            this.newTitle = data.title;
+            this.newContent = data.content;
+            this.newTags = data.tags;
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
     }
   },
   methods: {
     postQuestion() {
-      if (this.slug) {
+      if (this.id && this.slug) {
+        this.$api
+          .patch(`/questions/${this.slug}/answers/${this.id}`, {
+            content: this.newContent,
+          })
+          .then(({ data }) => {
+            this.$router.push(`/question/${data.slug}`);
+          });
+      } else if (this.slug) {
         this.$api
           .patch(`/questions/${this.slug}`, {
             title: this.newTitle,

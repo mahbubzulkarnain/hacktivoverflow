@@ -65,6 +65,11 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
     },
     {
+      path: '/question/:slug/answer/:id/edit',
+      name: 'answer-edit',
+      component: () => import(/* webpackChunkName: "question-read" */ './views/question/Create.vue'),
+    },
+    {
       path: '/question/',
       name: 'question',
       component: () => import(/* webpackChunkName: "question-read" */ './views/question/Index.vue'),

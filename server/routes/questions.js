@@ -131,6 +131,22 @@ router
           })
       })
   })
+  .get('/:slug/answers/:id', function ({params}, res, next) {
+    Answer
+      .findById(params.id)
+      .then((prop)=>{
+        res
+          .json(prop)
+      })
+      .then(()=>{
+        console.log(err);
+        res
+          .status(500)
+          .json({
+            message: 'Internal Server Error'
+          })
+      })
+  })
   .delete('/:slug/answers/:id', jwt, function ({params}, res, next) {
     Answer
       .findById(params.id)
@@ -328,6 +344,13 @@ router
     delete body['_id'];
     delete body['slug'];
     delete body['author'];
+    let newTag = [];
+    if (body.tags && body.tags.length) {
+      body.tags.forEach((tag) => {
+        newTag.push(slugify(tag).toLowerCase())
+      })
+    }
+    body.tags = newTag;
     Question
       .findOne({
         slug: params.slug

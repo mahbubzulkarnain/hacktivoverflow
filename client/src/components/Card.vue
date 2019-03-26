@@ -80,6 +80,8 @@ export default {
     editContent() {
       if (this.prop.answer) {
         this.$router.push(`/question/${this.prop.slug}/edit`);
+      } else {
+        this.$router.push(`/question/${this.$parent.question.slug}/answer/${this.prop._id}/edit`);
       }
     },
     deleteContent() {
