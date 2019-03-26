@@ -26,7 +26,9 @@
         <hr v-if="item.title">
         <p v-html="content"></p>
         <div class="tags" v-if="item.tags && item.tags.length">
-          <span class="tag" v-for="(tag,i) in item.tags" :key="i">{{tag}}</span>
+          <router-link class="tag" v-for="(tag,i) in item.tags" :key="i" :to="'/tags/'+tag">
+            {{tag}}
+          </router-link>
         </div>
       </div>
     </div>

@@ -81,6 +81,11 @@ const router = new Router({
         },
       ],
     },
+    {
+      path: '/tags/:slug',
+      name: 'question-read',
+      component: () => import(/* webpackChunkName: "question-read" */ './views/Home.vue'),
+    },
   ],
 });
 

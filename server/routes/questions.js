@@ -11,6 +11,7 @@ function getQuestionBySlug(slug) {
     .findOne({
       slug: slug
     })
+    .populate('author', '-password -googleToken')
     .populate({
       path: 'answer',
       populate: {

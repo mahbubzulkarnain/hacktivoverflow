@@ -1,29 +1,34 @@
 <template>
   <with-sidebar class="home">
-    <div v-for="question in questions" :key="question._id">
-      <router-link
-        :to="'/question/'+question.slug"
-        class="columns link-question"
-      >
-        <div class="column is-one-fifth has-text-centered">
-          <div class="columns">
-            <div class="column">
-              <p>{{question.upvote.length + question.downvote.length}}</p>
-              <p>Vote</p>
-            </div>
-            <div class="column">
-              <p>{{question.answer.length}}</p>
-              <p>Answer</p>
-            </div>
+    <div v-for="question in questions" :key="question._id" class="columns">
+      <div class="column is-one-fifth has-text-centered">
+        <router-link
+          :to="'/question/'+question.slug"
+          class="columns link-question"
+        >
+          <div class="column">
+            <p>{{question.upvote.length + question.downvote.length}}</p>
+            <p>Vote</p>
           </div>
-        </div>
-        <div class="column is-four-fifth">
+          <div class="column">
+            <p>{{question.answer.length}}</p>
+            <p>Answer</p>
+          </div>
+        </router-link>
+      </div>
+      <div class="column is-four-fifth">
+        <router-link
+          :to="'/question/'+question.slug"
+        >
           <h2 class="subtitle">{{question.title}}</h2>
-          <div class="tags" v-if="question.tags && question.tags.length">
-            <div class="tag" v-for="(tag,i) in question.tags" :key="i">{{tag}}</div>
-          </div>
+        </router-link>
+        <div class="tags" v-if="question.tags && question.tags.length">
+          <router-link class="tag" v-for="(tag,i) in question.tags" :key="i" :to="'/tags/'+tag">
+            {{tag}}
+          </router-link>
         </div>
-      </router-link>
+      </div>
+
     </div>
   </with-sidebar>
 </template>
@@ -37,15 +42,47 @@ export default {
       questions: [],
     };
   },
+  beforeUpdate() {
+    if (this.$router.currentRoute.params && this.$router.currentRoute.params.slug) {
+      this.$api
+        .get(`/tags/${this.$router.currentRoute.params.slug}`)
+        .then(({ data }) => {
+          this.questions = data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      this.$api
+        .get('/questions')
+        .then(({ data }) => {
+          this.questions = data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  },
   mounted() {
-    this.$api
-      .get('/questions')
-      .then(({ data }) => {
-        this.questions = data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (this.$router.currentRoute.params && this.$router.currentRoute.params.slug) {
+      this.$api
+        .get(`/tags/${this.$router.currentRoute.params.slug}`)
+        .then(({ data }) => {
+          this.questions = data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      this.$api
+        .get('/questions')
+        .then(({ data }) => {
+          this.questions = data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   },
 };
 </script>
