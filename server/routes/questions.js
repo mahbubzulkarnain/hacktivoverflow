@@ -7,13 +7,6 @@ const Question = require('../controllers/question');
 router
   .patch('/:slug/answers/:id/approve', jwt, Answer.approve);
 
-/**
- * answer: { downvotes: [], upvotes: [dimitri] }
- *
- * 1. Manipulasi array di JavaScript
- * 2. Answer.update({ downvotes, upvotes });
- */
-
 router
   .patch('/:slug/answers/:id/down', jwt, Answer.downvote)
   .patch('/:slug/answers/:id/up', jwt, Answer.upvote)
