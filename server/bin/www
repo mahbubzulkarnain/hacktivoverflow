@@ -145,8 +145,8 @@ cron.schedule('0 0 * * 0', async function () {
   });
 });
 
-//Monday **:**
-cron.schedule('* * * * 1', function () {
+//Monday 11:**
+cron.schedule('* * * 11 1', function () {
   const sendEmail = require('../helpers/sendemail');
   queue.process('report', (job, done) => {
     sendEmail(job.data, done);
