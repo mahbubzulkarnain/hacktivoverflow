@@ -117,21 +117,44 @@ function onListening() {
  * Cron JOB
  */
 
-// var kue = require('kue'), queue = kue.createQueue();
+var cron = require('node-cron');
+var {kue, queue} = require('../helpers/queue');
 
-// var job = queue.create('email', {
-//   title: 'welcome email for tj'
-//   , to: 'tj@learnboost.com'
-//   , template: 'welcome-email'
-// }).save(function (err) {
-//   if (!err) console.log(job.id, 'ini create');
-// });
+//Sunday 00:00
+cron.schedule('0 0 * * 0', async function () {
+  const User = require('../models/user/index');
+  const Question = require('../models/question/index');
+  const Answer = require('../models/answer/index');
 
-// kue.app.listen(4000, function () {
-//   console.log('Kue Listen on Port: 4000')
-// });
+  let dateNow = new Date();
+  let dateStart = new Date(dateNow.getTime() - (7 * 24 * 60 * 60 * 1000));
 
-// queue.process('email', (job, done) => {
-//   console.log(job.data, 'ini email');
-//   done()
-// });
+  (await User.find({}, '').exec()).forEach(async (user) => {
+    var query = {author: user._id, "created_at": {"$gte": dateStart, "$lt": dateNow}};
+
+    var job = queue.create('report', {
+      user: {
+        fullname: user.first_name + ' ' + user.last_name,
+        email: user.email,
+      },
+      question: await Question.count(query).exec(),
+      answer: await Answer.count(query).exec(),
+    }).save(function (err) {
+      if (err) console.log(job.id, err);
+    });
+  });
+});
+
+//Monday **:**
+cron.schedule('* * * * 1', function () {
+  const sendEmail = require('../helpers/sendemail');
+  queue.process('report', (job, done) => {
+    sendEmail(job.data, done);
+    done()
+  });
+});
+
+
+kue.app.listen(4000, function () {
+  console.log('Kue Listen on Port: 4000')
+});

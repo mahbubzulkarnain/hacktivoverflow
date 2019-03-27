@@ -6,6 +6,7 @@ class TagController {
       .find({
         tags: params.tags
       })
+      .populate('author', '-password -googleToken')
       .then((props) => {
         res
           .json(props)

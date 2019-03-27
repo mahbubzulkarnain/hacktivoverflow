@@ -1,9 +1,10 @@
 const User = require('../models/user/index');
 const bcrypt = require('bcrypt');
 const jwt = require('../helpers/jwt');
+const {queue} = require('../helpers/queue');
 
 class AuthController {
-  static login ({body}, res) {
+  static login({body}, res) {
     User
       .findOne({
         $or: [
@@ -14,6 +15,9 @@ class AuthController {
       .then((prop) => {
         console.log(prop, bcrypt.compareSync(body.password, prop.password), body.password);
         if (prop && bcrypt.compareSync(body.password, prop.password)) {
+          queue.create('user', prop).save(function (err) {
+            console.log(err);
+          });
           res
             .status(200)
             .json({
@@ -42,7 +46,8 @@ class AuthController {
           })
       })
   }
-  static register ({body}, res, next) {
+
+  static register({body}, res, next) {
     (new User(body))
       .save((err, prop) => {
         if (err) {

@@ -58,7 +58,6 @@ export default {
         this.$refs.btnShowFormEdit.innerHTML = '<i class="fa fa-save"  ref="btnShowFormEditIcon"></i> save';
         this.formWatchedIsShow = true;
       } else {
-        console.log(this.tags);
         this.$api
           .post('/tags/watched', { tags: this.tags })
           .then(({ data }) => {
@@ -72,18 +71,20 @@ export default {
       }
     },
   },
-  mounted(){
+  mounted() {
     this.isShowWatchedPage = this.$router.currentRoute.name === 'question-watched';
   },
   created() {
-    this.$api
-      .get('/users')
-      .then(({ data }) => {
-        this.tags = data.watched;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (this.isLogin) {
+      this.$api
+        .get('/users')
+        .then(({ data }) => {
+          this.tags = data.watched;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   },
   computed: {
     isLogin() {

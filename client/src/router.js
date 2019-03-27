@@ -31,6 +31,9 @@ const router = new Router({
       path: '/watched',
       name: 'question-watched',
       component: () => import(/* webpackChunkName: "question-tags" */ './views/Home.vue'),
+      meta: {
+        requiresAuth: true,
+      },
     },
     {
       path: '/',

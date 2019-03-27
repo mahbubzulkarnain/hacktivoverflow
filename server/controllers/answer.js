@@ -1,4 +1,5 @@
 const Answer = require('../models/answer/index');
+const Question = require('../models/question/index');
 const {ObjectId} = require('mongoose').Types;
 
 class AnswerController {
@@ -189,7 +190,7 @@ class AnswerController {
   /**
    * Approve
    */
-  static approve ({params}, res) {
+  static approve({params}, res) {
     Question
       .findOne({
         slug: params.slug,
@@ -238,5 +239,19 @@ async function clearVoteAnswer(id, user) {
     console.log(e)
   }
 }
+function getQuestionBySlug(slug) {
+  return Question
+    .findOne({
+      slug: slug
+    })
+    .populate('author', '-password -googleToken')
+    .populate({
+      path: 'answer',
+      populate: {
+        path: 'author',
+        select: '_id first_name last_name picture email username __v'
+      }
+    })
+};
 
 module.exports = AnswerController;
