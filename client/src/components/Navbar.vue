@@ -158,6 +158,7 @@ export default {
       > .navbar-item {
         color: white;
         font-size: large;
+        font-weight: bold;
       }
     }
 

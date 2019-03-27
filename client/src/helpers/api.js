@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = 'http://hacktivoverflow-server.cloudeyeglobal.com';
+const baseURL = process.env.VUE_APP_BASE_URL;
 
 export default axios.create({
   baseURL: `${baseURL}`,

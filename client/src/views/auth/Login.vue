@@ -78,7 +78,6 @@ export default {
           this.$router.replace('/');
         })
         .catch((err) => {
-          console.log(err.response);
           if (err.response.data && err.response.data.message) {
             this.error = err.response.data.message;
           }

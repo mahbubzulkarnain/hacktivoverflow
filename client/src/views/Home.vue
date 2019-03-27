@@ -51,7 +51,6 @@ export default {
   data() {
     return {
       questions: [],
-      router: '',
     };
   },
   methods: {
@@ -60,7 +59,16 @@ export default {
     },
   },
   mounted() {
-    if (this.$router.currentRoute.params && this.$router.currentRoute.params.slug) {
+    if (this.$router.currentRoute.name === 'question-watched') {
+      this.$api
+        .get('/watched')
+        .then(({ data }) => {
+          this.questions = data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else if (this.$router.currentRoute.params && this.$router.currentRoute.params.slug) {
       this.$api
         .get(`/tags/${this.$router.currentRoute.params.slug}`)
         .then(({ data }) => {

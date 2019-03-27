@@ -36,6 +36,8 @@ app.use(require('./middlewares/customValidator'));
 app
   .use('/auth', require('./routes/auth'))
   .use('/questions', require('./routes/questions'))
-  .use('/tags', require('./routes/tags'));
+  .use('/tags', require('./routes/tags'))
+  .use('/users', require('./routes/users'))
+  .use('/watched', require('./routes/watched'));
 
 module.exports = app;

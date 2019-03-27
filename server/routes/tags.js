@@ -1,24 +1,11 @@
 const router = require('express').Router();
-const Question = require('../models/question/index');
+const Tag = require('../controllers/tags');
+const User = require('../controllers/user');
+const jwt = require('../middlewares/jwt');
+
 
 router
-  .get('/:tags',function ({params}, res, next) {
-    Question
-      .find({
-        tags: params.tags
-      })
-      .then((props)=>{
-        res
-          .json(props)
-      })
-      .catch((err) => {
-        console.log(err);
-        res
-          .status(500)
-          .json({
-            message: 'Internal Server Error'
-          })
-      })
-  });
+  .post('/watched', jwt, User.updateWatchedTag)
+  .get('/:tags', Tag.read);
 
 module.exports = router;
